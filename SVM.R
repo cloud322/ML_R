@@ -16,7 +16,7 @@ set.seed(6412)
 x<-matrix(rnorm(20*2),ncol=2)
 y<-c(rep(-1,10),rep(1,10))
 x[y==1]<-x[y==1]+1
-
+?e1071
 # 산점도표시
 plot(x,col=3-y)
 
@@ -130,20 +130,21 @@ table(pred, test$Profit)
 confusionMatrix(pred, test$Profit)
 
 ##
-nPD<-read.csv('c:/java/posdata.csv')
+mid<-read.csv('c:/java/posdata.csv',header = T,sep = ',')
 # 1년동안 종목별 소비지출액을 0~1 사이 정규화 scale 했음 
 # status 1이면 중산층분류
-head(nPD)
-idx <- createDataPartition(nPD$status, p=0.7, list=F)
-train <- nPD[idx, ]
-test <- nPD[-idx, ]
-str(nPD)
+head(mid)
+idx <- createDataPartition(mid$status, p=0.7, list=F)
+train <- mid[idx, ]
+test <- mid[-idx, ]
+str(mid)
 factor(test$status)
 str(test$status)
 
-svm.result <- svm(status~., data=train, kernel='radial')
-pred <- predict(svm.result, test, type='response')
+svm.result <- svm(status~., data=train, kernel='radial',type='C-classification')
+pred <- predict(svm.result, test)
 summary(svm.result)
 
-table(pred, nPD$status)
-confusionMatrix(pred, nPD$status)
+table(pred, test$status)
+confusionMatrix(pred, test$status)
+
