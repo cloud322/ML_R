@@ -6,6 +6,7 @@ plot(AirPassengers)
 str(AirPassengers)
  
 ??tseries
+?Time-Series
 
 plot(stl(AirPassengers, s.window='periodic')) 
 # 계절성 (seasonality), 추세 (trend), 불확실성 (random) 요소로 분해해서 그래 프를 확인할 수 있다.

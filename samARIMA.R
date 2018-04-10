@@ -24,6 +24,7 @@ d_p_sam
 a0403M<-read.csv('C:/Users/DJA/Downloads/0403_samsung_min_A.csv', header = T, sep=',')
 head(a0403M)
 
+
 install.packages("dplyr")
 library(dplyr)
 
@@ -37,43 +38,71 @@ library(lubridate)
 d_p_sam<-a0403M %>% select(date, price)
 d_p_sam
 str(d_p_sam)
+d_p_sam1<-d_p_sam[9:399,]
 
+dp_ts = ts(d_p_sam1[, c('price')])
+dp_ts
+str(dp_ts)
+
+z_d_p_sam1<-zoo(d_p_sam1$price,d_p_sam1$date)
+plot(z_d_p_sam1,screen=1)
+str(z_d_p_sam1)
+data(z_d_p_sam1)
+
+
+# ?data
+# time <- c(as.POSIXct(sprintf("%06.0f", x), format='%H%M%S'))
+# price <- c(d_p_sam$price)
+# df<- data.frame(time,price)
+# df
+# 
+# install.packages("PerformanceAnalytics")
+# library(PerformanceAnalytics)
+# d_p_sam$date <- as.Date(as.character(d_p_sam$date),format="%Y-%m-%d %H:%M:%S")
+# d_p_sam$date 
+# x <- xts(d_p_sam$price,d_p_sam$date)
+# x
+# CalmarRatio(Return.calculate(x))
 #time series
-library(xts)
-sam_d_p <- xts(d_p_sam[,-1], order.by=as.Date(d_p_sam[,1], "%Y/%m/%d"))
+# library(xts)
+# ?xts
+# sam_d_p <- xts(d_p_sam[,-1], order.by = as.time(d_p_sam[,1]))
+# head(sam_d_p)
+# as.time
 #
 #  daily returns
 #
-returns <- diff(sam_d_p, arithmetic=FALSE ) - 1
-#
-#  weekly open, high, low, close reports
-#
-to.weekly(sam_d_p$Hero_close, name="Hero")
+# returns <- diff(sam_d_p, arithmetic=FALSE ) - 1
+# #
+# #  weekly open, high, low, close reports
+# #
+# to.weekly(sam_d_p$Hero_close, name="Hero")
 
 #통계기반데이터분ㅅ
-head(d_p_sam)
-data(d_p_sam)
+head(dp_ts)
+str(dp_ts)
+data(dp_ts)
 
-plot(d_p_sam) 
+plot(dp_ts) 
 
-plot(stl(d_p_sam, s.window='periodic')) 
+plot(stl(dp_ts, s.window='periodic')) 
 # 계절성 (seasonality), 추세 (trend), 불확실성 (random) 요소로 분해해서 그래 프를 확인할 수 있다.
 
 install.packages("tseries")
 library(tseries)
-difflogd_p_sam <- diff(log(d_p_sam))
-plot(difflogAirPassengers)
+difflogd_p_sam <- diff(log(dp_ts))
+plot(difflogd_p_sam)
 #AirPassengers 시계열 데이터에 diff 및 log함수를 적용한 데이터 플롯
 
-adf.test(difflogAirPassengers, alternative="stationary", k=0)
+adf.test(difflogd_p_sam, alternative="stationary", k=0)
 
 install.packages("forecast")
 library(forecast)
-auto.arima(difflogAirPassengers)
+auto.arima(difflogd_p_sam)
 
-fitted <- arima(log(AirPassengers), c(1, 0, 1), seasonal = list(order = c(0, 1, 1), period = 12))
+fitted <- arima(log(dp_ts), c(1, 0, 1), seasonal = list(order = c(0, 1, 1), period = 12))
 fitted
 predicted <- predict(fitted, n.ahead = 120)
-ts.plot(AirPassengers, exp(predicted$pred), lty = c(1,2))
+ts.plot(dp_ts, exp(predicted$pred), lty = c(1,2))
 # predicted$pred 항목에 log(AirPassengers)의 예측치 값이 저장 
 # AirPassengers 데이터를 바탕으로 생성한 ARIMA 모델 기반 10년 예측 데이터 플롯
